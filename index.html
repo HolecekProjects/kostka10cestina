@@ -1,62 +1,125 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<title>Kostka D10</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{margin:0;font-family:'Segoe UI',sans-serif;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#ecf0f1}
-svg{width:250px;height:250px;display:block}
-#i{width:250px;height:250px;object-fit:contain;display:none;border-radius:15px;box-shadow:0 4px 8px rgba(0,0,0,.2)}
-.c{height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-#f{fill:#fff;stroke:#2c3e50;stroke-width:6;stroke-linejoin:round}
-.e{fill:none;stroke:#2c3e50;stroke-width:3;stroke-linejoin:round;opacity:.35}
-#n{fill:#2c3e50;font-weight:bold}
-button{padding:20px 60px;font-size:24px;font-weight:bold;background:#3498db;color:#fff;border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px #2980b9}
-button:active{transform:translateY(4px);box-shadow:0 2px #2980b9}
-button:disabled{opacity:.7}
-.shake{animation:s .5s linear infinite}
-@keyframes s{0%{transform:rotate(0)}25%{transform:rotate(15deg)}50%{transform:rotate(-15deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
-</style>
-<script src="config.js"></script>
+    <meta charset="UTF-8">
+    <title>Kostka D10</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ecf0f1; }
+        .dice-container {
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        #dice-text { 
+            width: 250px;
+            height: 250px;
+            user-select: none; 
+            display: block; 
+        }
+        #dice-text svg { width: 100%; height: 100%; display: block; }
+        #dice-face { fill: #ffffff; stroke: #2c3e50; stroke-width: 6; stroke-linejoin: round; }
+        .dice-edges { fill: none; stroke: #2c3e50; stroke-width: 3; stroke-linejoin: round; opacity: 0.35; }
+        #dice-number { fill: #2c3e50; font-family: 'Segoe UI', sans-serif; font-weight: bold; }
+        #dice-image {
+            width: 250px; 
+            height: 250px;
+            object-fit: contain;
+            display: none; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+        #roll-btn { 
+            padding: 20px 60px; 
+            font-size: 24px; 
+            font-weight: bold; 
+            background-color: #3498db; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            box-shadow: 0 6px #2980b9; 
+            transition: all 0.2s; 
+        }
+        #roll-btn:active { 
+            transform: translateY(4px); 
+            box-shadow: 0 2px #2980b9; 
+        }
+        .shake { animation: shake 0.5s linear infinite; }
+        @keyframes shake { 
+            0% { transform: rotate(0deg); } 
+            25% { transform: rotate(15deg); } 
+            50% { transform: rotate(-15deg); } 
+            75% { transform: rotate(5deg); } 
+            100% { transform: rotate(0deg); } 
+        }
+    </style>
+    <script src="config.js"></script>
 </head>
 <body>
-<div class="c">
-<svg id="d" viewBox="0 0 250 250" aria-label="D10">
-  <polygon id="f" points="125,8 238,105 125,242 12,105"/>
-  <polyline class="e" points="12,105 70,125 125,95 180,125 238,105"/>
-  <polyline class="e" points="70,125 125,242 180,125"/>
-  <text id="n" x="125" y="168" text-anchor="middle" font-size="90">1</text>
-</svg>
-<img id="i" src="d.jpg" alt="">
-</div>
-<button id="b" onclick="roll()">Hodit</button>
-<script>
-// rovnoměrné náhodné číslo 1–10 (bez modulo biasu)
-function rnd(){
-  const a=new Uint32Array(1), lim=Math.floor(4294967296/10)*10;
-  do crypto.getRandomValues(a); while(a[0]>=lim);
-  return a[0]%10+1;
-}
-function log(v){
-  try{
-    if(!window.CFG||CFG.u.includes('YOUR-'))return;
-    fetch(CFG.u+'/rest/v1/events',{method:'POST',keepalive:true,
-      headers:{apikey:CFG.k,'Content-Type':'application/json',Prefer:'return=minimal'},
-      body:JSON.stringify({v})}).catch(()=>{});
-  }catch(e){}
-}
-function roll(){
-  const b=document.getElementById('b'),d=document.getElementById('d'),n=document.getElementById('n'),im=document.getElementById('i');
-  b.disabled=true;d.style.display='none';im.style.display='block';im.classList.add('shake');
-  setTimeout(()=>{
-    const v=rnd();
-    log(v);
-    im.classList.remove('shake');im.style.display='none';d.style.display='block';
-    n.textContent=v;n.setAttribute('font-size',v===10?80:90);
-    b.disabled=false;
-  },3000);
-}
-</script>
+
+    <div class="dice-container">
+        <div id="dice-text">
+            <svg viewBox="0 0 250 250" aria-label="D10">
+                <polygon id="dice-face" points="125,8 238,105 125,242 12,105" />
+                <polyline class="dice-edges" points="12,105 70,125 125,95 180,125 238,105" />
+                <polyline class="dice-edges" points="70,125 125,242 180,125" />
+                <text id="dice-number" x="125" y="168" text-anchor="middle" font-size="90">1</text>
+            </svg>
+        </div>
+
+        <img id="dice-image" 
+             src="d.jpg" 
+             onerror="this.src='https://cdn-icons-png.flaticon.com/512/1500/1500427.png'"
+             alt="Kostka se točí...">
+    </div>
+
+    <button id="roll-btn" onclick="rollDice()">Roztočit kostku</button>
+
+    <script>
+        function rnd() {
+            const a = new Uint32Array(1), lim = Math.floor(4294967296 / 10) * 10;
+            do crypto.getRandomValues(a); while (a[0] >= lim);
+            return a[0] % 10 + 1;
+        }
+
+        function log(v) {
+            try {
+                if (!window.CFG || CFG.u.includes('YOUR-')) return;
+                fetch(CFG.u + '/rest/v1/events', {
+                    method: 'POST', keepalive: true,
+                    headers: { apikey: CFG.k, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+                    body: JSON.stringify({ v })
+                }).catch(() => {});
+            } catch (e) {}
+        }
+
+        function rollDice() {
+            const diceText = document.getElementById('dice-text');
+            const diceImage = document.getElementById('dice-image');
+            const btn = document.getElementById('roll-btn');
+
+            btn.disabled = true; 
+            diceText.style.display = 'none';
+            diceImage.style.display = 'block';
+            diceImage.classList.add('shake');
+
+            setTimeout(() => {
+                const num = rnd();
+                log(num);
+
+                diceImage.classList.remove('shake'); 
+                diceImage.style.display = 'none';
+                const numberEl = document.getElementById('dice-number');
+                numberEl.textContent = num;
+                numberEl.setAttribute('font-size', num === 10 ? 80 : 90);
+                diceText.style.display = 'block';
+                
+                btn.disabled = false; 
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
