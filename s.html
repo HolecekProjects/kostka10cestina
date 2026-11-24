@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8"><title>·</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#ecf0f1;color:#2c3e50;max-width:520px;margin:30px auto;padding:0 16px}
+input,button{font-size:16px;padding:10px;margin:4px 0;width:100%;box-sizing:border-box}
+.bar{display:flex;align-items:center;gap:8px;margin:3px 0}.bar i{display:block;height:14px;background:#3498db}
+table{width:100%;border-collapse:collapse;margin-top:16px}td{padding:4px 6px;border-bottom:1px solid #ccc}
+#out{display:none}
+</style>
+<script src="config.js"></script>
+</head>
+<body>
+<form id="login">
+  <input id="em" type="email" placeholder="e-mail" autocomplete="username">
+  <input id="pw" type="password" placeholder="heslo" autocomplete="current-password">
+  <button>OK</button><div id="err" style="color:#c0392b"></div>
+</form>
+<div id="out"><div id="sum"></div><table id="tb"></table></div>
+<script>
+const H=t=>({apikey:CFG.k,Authorization:'Bearer '+t});
+document.getElementById('login').onsubmit=async e=>{
+  e.preventDefault();
+  const r=await fetch(CFG.u+'/auth/v1/token?grant_type=password',{method:'POST',
+    headers:{apikey:CFG.k,'Content-Type':'application/json'},
+    body:JSON.stringify({email:em.value,password:pw.value})});
+  const j=await r.json();
+  if(!j.access_token){err.textContent='Chyba přihlášení';return}
+  const q=await fetch(CFG.u+'/rest/v1/events?select=t,v&order=t.desc&limit=1000',{headers:H(j.access_token)});
+  const rows=await q.json();
+  if(!Array.isArray(rows)){err.textContent='Bez přístupu';return}
+  login.style.display='none';out.style.display='block';
+  const c=Array(11).fill(0);rows.forEach(x=>c[x.v]++);
+  const max=Math.max(1,...c);
+  sum.innerHTML='<b>Celkem: '+rows.length+'</b>'+
+    c.slice(1).map((n,i)=>`<div class="bar"><span style="width:24px">${i+1}</span><i style="width:${n/max*100*2.5}px"></i>${n}</div>`).join('');
+  tb.innerHTML=rows.map(x=>`<tr><td>${new Date(x.t).toLocaleString('cs-CZ')}</td><td><b>${x.v}</b></td></tr>`).join('');
+};
+</script>
+</body>
+</html>
