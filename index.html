@@ -6,7 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body{margin:0;font-family:'Segoe UI',sans-serif;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#ecf0f1}
-svg{width:250px;height:250px;display:block;margin-bottom:20px}
+svg{width:250px;height:250px;display:block}
+#i{width:250px;height:250px;object-fit:contain;display:none;border-radius:15px;box-shadow:0 4px 8px rgba(0,0,0,.2)}
+.c{height:250px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
 #f{fill:#fff;stroke:#2c3e50;stroke-width:6;stroke-linejoin:round}
 .e{fill:none;stroke:#2c3e50;stroke-width:3;stroke-linejoin:round;opacity:.35}
 #n{fill:#2c3e50;font-weight:bold}
@@ -19,12 +21,15 @@ button:disabled{opacity:.7}
 <script src="config.js"></script>
 </head>
 <body>
+<div class="c">
 <svg id="d" viewBox="0 0 250 250" aria-label="D10">
   <polygon id="f" points="125,8 238,105 125,242 12,105"/>
   <polyline class="e" points="12,105 70,125 125,95 180,125 238,105"/>
   <polyline class="e" points="70,125 125,242 180,125"/>
   <text id="n" x="125" y="168" text-anchor="middle" font-size="90">1</text>
 </svg>
+<img id="i" src="d.jpg" alt="">
+</div>
 <button id="b" onclick="roll()">Hodit</button>
 <script>
 // rovnoměrné náhodné číslo 1–10 (bez modulo biasu)
@@ -42,15 +47,15 @@ function log(v){
   }catch(e){}
 }
 function roll(){
-  const b=document.getElementById('b'),d=document.getElementById('d'),n=document.getElementById('n');
-  b.disabled=true;d.classList.add('shake');
+  const b=document.getElementById('b'),d=document.getElementById('d'),n=document.getElementById('n'),im=document.getElementById('i');
+  b.disabled=true;d.style.display='none';im.style.display='block';im.classList.add('shake');
   setTimeout(()=>{
     const v=rnd();
     log(v);
-    d.classList.remove('shake');
+    im.classList.remove('shake');im.style.display='none';d.style.display='block';
     n.textContent=v;n.setAttribute('font-size',v===10?80:90);
     b.disabled=false;
-  },1500);
+  },3000);
 }
 </script>
 </body>
